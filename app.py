@@ -58,14 +58,15 @@ def extract_inventor(string):
         name = name_match.group(name_match.lastindex).strip() if name_match else ''
 
         # Extract address
-        address_pattern = r'(address 1|address) (.*?) address 2'
+        address_pattern = r'.*?(address 1|address) (.*?) address 2'
         address_match = re.search(address_pattern, second_part)
         address = address_match.group(address_match.lastindex).strip() if address_match else ''
 
         # Extract city
-        city_pattern = r'city (.*?) (statelprovince|state/province)'
+        # city_pattern = r'address 2 (.*?)\sstatel?province'
+        city_pattern = r'address 2 (.*?)\sstatel?province|address 2 city (.*?)\sstate/province'
         city_match = re.search(city_pattern, second_part)
-        city = city_match.group(1).strip() if city_match else ''
+        city = city_match.group(city_match.lastindex).strip() if city_match else ''
 
         # Extract state/province
         state_province_pattern = r'(statelprovince|state/province) (.*?) postal code'
