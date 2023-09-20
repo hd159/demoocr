@@ -1,0 +1,60 @@
+<p-table
+  [value]="results"
+  rowGroupMode="rowspan"
+  groupRowsBy="patentNumber"
+  [tableStyle]="{ 'min-width': '75rem' }"
+  #dt
+  [columns]="cols"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex">
+      <button
+        type="button"
+        pButton
+        icon="pi pi-file"
+        (click)="exportCSV(dt)"
+        class="mr-2"
+      ></button>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th *ngFor="let col of columns">
+          {{ col.header }}
+      </th>
+  </tr>
+  </ng-template>
+  <ng-template
+    pTemplate="body"
+    let-patent
+    let-rowIndex="rowIndex"
+    let-rowgroup="rowgroup"
+    let-rowspan="rowspan"
+  >
+    <tr>
+      <td [attr.rowspan]="rowspan">
+        <span class="font-bold ml-2">{{ patent.patentNumber }}</span>
+      </td>
+      <td>
+        {{ patent.appId }}
+      </td>
+
+      <td>
+        <div [innerHTML]="patent.assigneeName">
+        </div>
+      </td>
+      <td>
+        <div [innerHTML]="patent.assigneeAddr">
+        </div>
+      </td>
+      <td>
+        <div [innerHTML]="patent.inventorName">
+        </div>
+      </td>
+      <td>
+        <div [innerHTML]="patent.inventorAddr">
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
