@@ -55,32 +55,32 @@ def extract_inventor(string):
         # Extract name
         name_pattern = r'^(.*?) residence information'
         name_match = re.search(name_pattern, name_part)
-        name = name_match.group(1).strip() if name_match else ''
+        name = name_match.group(name_match.lastindex).strip() if name_match else ''
 
         # Extract address
-        address_pattern = r'address (.*?) address 2'
+        address_pattern = r'(address 1|address) (.*?) address 2'
         address_match = re.search(address_pattern, second_part)
-        address = address_match.group(1).strip() if address_match else ''
+        address = address_match.group(address_match.lastindex).strip() if address_match else ''
 
         # Extract city
-        city_pattern = r'city (.*?) statelprovince'
+        city_pattern = r'city (.*?) (statelprovince|state/province)'
         city_match = re.search(city_pattern, second_part)
         city = city_match.group(1).strip() if city_match else ''
 
         # Extract state/province
-        state_province_pattern = r'statelprovince (.*?) postal code'
+        state_province_pattern = r'(statelprovince|state/province) (.*?) postal code'
         state_province_match = re.search(state_province_pattern, second_part)
-        state_province = state_province_match.group(1).strip() if state_province_match else ''
+        state_province = state_province_match.group(state_province_match.lastindex).strip() if state_province_match else ''
 
         # Extract postal code
         postal_code_pattern = r'postal code (.*?) countryi'
         postal_code_match = re.search(postal_code_pattern, second_part)
-        postal_code = postal_code_match.group(1).strip() if postal_code_match else ''
+        postal_code = postal_code_match.group(postal_code_match.lastindex).strip() if postal_code_match else ''
 
         # Extract country
         country_pattern = r'countryi (.*)'
         country_match = re.search(country_pattern, second_part)
-        country = country_match.group(1).strip() if country_match else ''
+        country = country_match.group(country_match.lastindex).strip() if country_match else ''
 
     inventor_dict = {
         'name': name,
@@ -94,10 +94,9 @@ def extract_inventor(string):
     return inventor_dict
 
 
-def export_csv(inventor_results: list):
-    csv_file = 'inventor.csv'
+def export_csv(inventor_results: list, file_name):
     fieldnames = inventor_results[0].keys()
-    with open(csv_file, 'w', newline='') as file:
+    with open(file_name, 'w', newline='') as file:
         writer = csv.DictWriter(file, fieldnames)
         writer.writeheader()
         writer.writerows(inventor_results)
@@ -108,12 +107,11 @@ def process_pdf():
     languages = ['en']
     for filename in os.listdir(pdf_folder_path):
         if filename.endswith('.pdf'):
+            inventors = []
             pdf_path = os.path.join(pdf_folder_path, filename)
             ocr_text = perform_ocr_on_pdf(pdf_path, languages)
             inventors = extractText(ocr_text)
-            inventor_results.extend(inventors)
-
-    export_csv(inventor_results)
-
+            csv_file_name = "{}.csv".format(filename)
+            export_csv(inventors, csv_file_name)
 
 process_pdf()
